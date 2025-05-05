@@ -9,6 +9,9 @@ const tireSchema = new Schema(
     producer: { type: String, required: true },
     model: { type: String, required: true },
     layering: { type: String, required: true },
+    image: { type: String, default: null, required: false },
+    // stock: { type: Number, default: 0 }, //кількість що залишилась?
+    //instock: { type: Boolean, default: false, required: true }, //в наявності?
   },
   {
     timestamps: true, //час створення та оновлення документа.

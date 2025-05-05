@@ -1,14 +1,15 @@
 import { Router } from 'express';
 import {
-  getTiresByIdController,
+  getTireByIdController,
   getTiresController,
 } from '../controllers/tires.js';
+import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 
 const router = Router();
 
-router.get('/tires', getTiresController);
+router.get('/tires', ctrlWrapper(getTiresController));
 
-router.get('/tires/:tireId', getTiresByIdController);
+router.get('/tires/:tireId', ctrlWrapper(getTireByIdController));
 
 //POST
 //DELETE

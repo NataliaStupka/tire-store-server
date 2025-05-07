@@ -4,29 +4,43 @@ export const getAllTires = async () => {
   const tires = await TiresCollection.find();
   return tires;
 };
-// export const getAllTires = async () => {
-//   try {
-//     const tires = await TiresCollection.find();
-//     return tires;
-//   } catch (error) {
-//     throw new Error(`Error fetching tires: ${error.message}`);
-//   }
-// };
 
 export const getTireById = async (tireId) => {
   const tire = await TiresCollection.findById(tireId);
   return tire;
 };
-// export const getTireById = async (tireId) => {
-//   try {
-//     const tire = await TiresCollection.findById(tireId);
-//     if (!tire) throw new Error('Tire not found');
-//     return tire;
-//   } catch (error) {
-//     throw new Error(`Error fetching tire: ${error.message}`);
-//   }
-// };
 
-//createTire
-//updateTire
-//deleteTire
+//CREATE-Tire  //payload - об’єкт даних tire
+export const createTire = async (payload) => {
+  const tire = await TiresCollection.create(payload);
+  return tire;
+};
+
+//DELETE-Tire
+export const deleteTire = async (tireId) => {
+  const tire = await TiresCollection.findOneAndDelete({
+    _id: tireId,
+  });
+  return tire;
+};
+
+//PUT - PATCH  //payload - об’єкт даних для оновлення
+////оновлення існуючого/створення нового
+export const updateTire = async (tireId, payload, options = {}) => {
+  const rawResult = await TiresCollection.findOneAndUpdate(
+    { _id: tireId },
+    payload,
+    {
+      new: true,
+      includeResultMetadata: true,
+      ...options,
+    },
+  );
+
+  if (!rawResult || !rawResult.value) return null;
+  console.log('RAW-----------', rawResult.value);
+  return {
+    tire: rawResult.value,
+    isNew: Boolean(rawResult?.lastErrorObject?.upserted),
+  };
+};

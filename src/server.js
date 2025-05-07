@@ -3,7 +3,9 @@ import cors from 'cors'; //взаємодія бекенду із фронтен
 import pino from 'pino-http'; //логування
 
 import { getEnvVar } from './utils/getEnvVar.js'; // чи є данні змінної оточення (.env)
-import tiresRouters from './routers/tires.js';
+import tiresRouters from './routers/index.js';
+import { notFoundHandler } from './middlewares/notFoundHandler.js';
+import { errorHandler } from './middlewares/errorHandler.js';
 
 const PORT = Number(getEnvVar('PORT', 3000)); //читання/доступ змінних оточення
 
@@ -32,20 +34,9 @@ export const startServer = () => {
 
   //
   app.use(tiresRouters); // Додаємо роутер до app як middleware
-  //
 
-  app.use('*', (req, res, next) => {
-    res.status(404).json({
-      message: 'Not found',
-    });
-  });
-
-  app.use((err, req, res, next) => {
-    res.status(500).json({
-      message: 'Something went wrong',
-      error: err.message,
-    });
-  });
+  app.use('*', notFoundHandler); //Route not found - 404
+  app.use(errorHandler); //Something went wrong - 500
 
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

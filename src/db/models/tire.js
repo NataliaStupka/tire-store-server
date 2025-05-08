@@ -3,15 +3,22 @@ import { model, Schema } from 'mongoose';
 // Schema
 const tireSchema = new Schema(
   {
+    category: {
+      type: String,
+      required: true,
+      enum: ['loader', 'industrial', 'agricultural', 'rims'],
+    },
     title: { type: String, required: true },
     price: { type: Number, required: true },
     size: { type: String, required: true },
-    producer: { type: String, required: true },
+    producer: { type: String },
     model: { type: String, required: true },
-    layering: { type: String, required: true },
+    layering: { type: String, required: false },
+    loadIndex: { type: String, required: false },
+    tireType: { type: String, required: false, enum: ['tl', 'tt', ''] }, //прибрати з enum ''
     image: { type: String, default: null, required: false },
     // stock: { type: Number, default: 0 }, //кількість що залишилась?
-    //instock: { type: Boolean, default: false, required: true }, //в наявності?
+    instock: { type: Boolean, default: false, required: false }, //в наявності?
   },
   {
     timestamps: true, //час створення та оновлення документа.

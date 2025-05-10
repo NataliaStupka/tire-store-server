@@ -6,9 +6,24 @@ import {
   updateTire,
 } from '../services/tires.js';
 import createHttpError from 'http-errors'; //зручне створення помилок
+import { parsePaginationParams } from '../utils/parsePaginationParams.js';
+import { parseSortParams } from '../utils/parseSortParams.js';
 
 export const getTiresController = async (req, res, next) => {
-  const tires = await getAllTires();
+  //pagination
+  const { page, perPage } = parsePaginationParams(req.query);
+  console.log('req.query - PAGINATION------==', req.query);
+
+  //sort
+  const { sortBy, sortOrder } = parseSortParams(req.query);
+  console.log('req.query - SORT------==', req.query);
+
+  const tires = await getAllTires({
+    page,
+    perPage,
+    sortBy,
+    sortOrder,
+  });
 
   res.json({
     status: 200,

@@ -1,10 +1,36 @@
 import { TiresCollection } from '../db/models/tire.js';
+import { calculatePaginationData } from '../utils/calculatePaginationData.js';
 
-export const getAllTires = async () => {
-  const tires = await TiresCollection.find();
-  return tires;
+// All tire (+sort, +filter)
+export const getAllTires = async ({
+  page = 1,
+  perPage = 10,
+  sortOrder = 'asc',
+  sortBy,
+}) => {
+  const limit = perPage;
+  const skip = (page - 1) * perPage;
+
+  //find - Створює базовий запит на пошук tire
+  const tireQuery = TiresCollection.find();
+  const tireCount = await TiresCollection.find()
+    .merge(tireQuery) //зливає (умови з іншого запиту)
+    .countDocuments(); //підраховує кількість tire, що задовольняють умови запиту.
+
+  const tires = await tireQuery
+    .skip(skip)
+    .limit(limit)
+    .sort({ [sortBy]: sortOrder })
+    .exec(); //exeс - запускає запит і повертає результат
+  const paginationData = calculatePaginationData(tireCount, perPage, page);
+
+  return {
+    data: tires,
+    ...paginationData,
+  };
 };
 
+//tire by ID
 export const getTireById = async (tireId) => {
   const tire = await TiresCollection.findById(tireId);
   return tire;

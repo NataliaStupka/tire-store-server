@@ -8,6 +8,7 @@ import {
 import createHttpError from 'http-errors'; //зручне створення помилок
 import { parsePaginationParams } from '../utils/parsePaginationParams.js';
 import { parseSortParams } from '../utils/parseSortParams.js';
+import { parseFiltersParams } from '../utils/parseFilterParams.js';
 
 export const getTiresController = async (req, res, next) => {
   //pagination
@@ -18,11 +19,16 @@ export const getTiresController = async (req, res, next) => {
   const { sortBy, sortOrder } = parseSortParams(req.query);
   console.log('req.query - SORT------==', req.query);
 
+  //filter
+  const filter = parseFiltersParams(req.query);
+  console.log('req.query - FILTER------==', req.query);
+
   const tires = await getAllTires({
     page,
     perPage,
     sortBy,
     sortOrder,
+    filter,
   });
 
   res.json({

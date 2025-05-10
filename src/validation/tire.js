@@ -27,8 +27,8 @@ export const createTireSchema = Joi.object({
   producer: Joi.string().allow('').optional().messages({
     'string.base': 'Producer must be a string',
   }),
-  model: Joi.string().required().messages({
-    'any.required': 'Model is required',
+  modelTire: Joi.string().allow('').messages({
+    'any.required': 'Model is string',
   }),
   layering: Joi.string().allow('').messages({
     'string.base': 'Layering must be a string',
@@ -39,10 +39,16 @@ export const createTireSchema = Joi.object({
   image: Joi.string().messages({
     'string.base': 'Image must be a string',
   }),
-  tireType: Joi.string().valid('tl', 'ttf').allow('').optional().messages({
-    'any.only': 'Tire type must be either "tl" or "ttf"',
+  tireType: Joi.string().valid('tl', 'tt').allow('').optional().messages({
+    'any.only': 'Tire type must be either "tl" or "tt"',
   }), //.optional() ????????
   //   stock: Joi.number(), //кількість що залишилась
+  //   diskDiameter: Joi.number().messages({
+  //     'number.base': 'DiskDiameter must be a number',
+  //   }),
+  diskModel: Joi.string().allow('').messages({
+    'string.base': 'DiskModel must be a string',
+  }),
   instock: Joi.boolean(), //є в наявності
 });
 
@@ -62,13 +68,13 @@ export const updateTireSchema = Joi.object({
     'number.base': 'Price must be a number',
     'number.integer': 'Price must be an integer',
   }),
-  size: Joi.string().messages({
+  sizeTire: Joi.string().messages({
     'string.base': 'Size must be a string',
   }),
   producer: Joi.string().allow('').optional().messages({
     'string.base': 'Producer must be a string',
   }),
-  model: Joi.string().messages({
+  modelTire: Joi.string().messages({
     'string.base': 'Model must be a string',
   }),
   layering: Joi.string().messages({
@@ -77,11 +83,17 @@ export const updateTireSchema = Joi.object({
   loadIndex: Joi.string().allow('').messages({
     'string.base': 'LoadIndex must be a string',
   }),
-  tireType: Joi.string().valid('tl', 'ttf').allow('').optional().messages({
-    'any.only': 'Tire type must be either "tl" or "ttf"',
+  tireType: Joi.string().valid('tl', 'tt').allow('').optional().messages({
+    'any.only': 'Tire type must be either "tl" or "tt"',
   }),
   image: Joi.string().messages({
     'string.base': 'Image must be a string',
+  }),
+  //   diskDiameter: Joi.number().messages({
+  //     'number.base': 'DiskDiameter must be a number',
+  //   }),
+  diskModel: Joi.string().allow('').messages({
+    'string.base': 'DiskModel must be a string',
   }),
   //   stock: Joi.number(),
   instock: Joi.boolean(),

@@ -7,12 +7,36 @@ export const getAllTires = async ({
   perPage = 10,
   sortOrder = 'asc',
   sortBy,
+  filter = {},
 }) => {
   const limit = perPage;
   const skip = (page - 1) * perPage;
 
   //find - Створює базовий запит на пошук tire
   const tireQuery = TiresCollection.find();
+
+  //filter
+  console.log('FILTER-services', filter);
+  if (filter.category) {
+    tireQuery.where('category').equals(filter.category);
+  }
+  if (filter.title) {
+    tireQuery.where('title').equals(filter.title);
+  }
+  if (filter.minPrice !== undefined || filter.maxPrice !== undefined) {
+    const priceFilter = {};
+    if (filter.minPrice !== undefined) priceFilter.$gte = filter.minPrice; //>=
+    if (filter.maxPrice !== undefined) priceFilter.$lte = filter.maxPrice; //<=
+    tireQuery.where('price').$gte(priceFilter.$gte).lte(priceFilter.$lte);
+  }
+  if (filter.tireType) {
+    tireQuery.where('tireType').equals(filter.tireType);
+  }
+  // не зрозуміла ??
+  if (filter.instock || filter.instock === false) {
+    tireQuery.where('instock').equals(filter.instock);
+  }
+
   const tireCount = await TiresCollection.find()
     .merge(tireQuery) //зливає (умови з іншого запиту)
     .countDocuments(); //підраховує кількість tire, що задовольняють умови запиту.
@@ -21,6 +45,7 @@ export const getAllTires = async ({
     .skip(skip)
     .limit(limit)
     .sort({ [sortBy]: sortOrder })
+    // .sort({ [sortBy]: sortOrder === 'desc' ? -1 : 1 })  // 1-'asc', -1 - 'desc'
     .exec(); //exeс - запускає запит і повертає результат
   const paginationData = calculatePaginationData(tireCount, perPage, page);
 

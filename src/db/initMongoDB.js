@@ -11,7 +11,7 @@ export const initMongoDB = async () => {
     const conectionURL = `mongodb+srv://${user}:${password}@${url}/${db}?retryWrites=true&w=majority&appName=Cluster0`;
     await mongoose.connect(conectionURL);
 
-    console.log('Mongo connection successfully established! 👍');
+    console.log('Mongo connection successfully established! 😍');
   } catch (err) {
     console.error('Error while setting up mongo connection 🚫', err);
     process.exit(1); //закінчуємо процес і виходимо з кодом 1

@@ -1,5 +1,7 @@
 import { TiresCollection } from '../db/models/tire.js';
 import { calculatePaginationData } from '../utils/calculatePaginationData.js';
+import { saveFile } from '../utils/saveFile.js';
+import cloudinary from 'cloudinary';
 
 // All tire (+sort, +filter)
 export const getAllTires = async ({
@@ -61,26 +63,48 @@ export const getTireById = async (tireId) => {
   return tire;
 };
 
-//CREATE-Tire  //payload - об’єкт даних tire
+//CREATE-Tire  //payload - {об’єкт} даних tire (весь запит)
 export const createTire = async (payload) => {
-  const tire = await TiresCollection.create(payload);
-  return tire;
-};
+  let image = null; //посилання на фото
+  let imagePublicId = null;
 
-//DELETE-Tire
-export const deleteTire = async (tireId) => {
-  const tire = await TiresCollection.findOneAndDelete({
-    _id: tireId,
+  if (payload.photo) {
+    console.log('payload.photo', payload.photo); // {filedname:, ..., path:, ...}
+    //// Отримуємо URL з Cloudinary
+    const result = await saveFile(payload.photo); //зберігає локально/cloudinary, залежно від змінної оточення
+    image = result.url;
+    imagePublicId = result.publicId;
+  }
+
+  const tire = await TiresCollection.create({
+    ...payload,
+    price: Number(payload.price), //??
+    instock: payload.instock === 'true', //??
+    image, //за замовчуванням null
+    imagePublicId, //
   });
   return tire;
 };
 
 //PUT - PATCH  //payload - об’єкт даних для оновлення
 ////оновлення існуючого/створення нового
-export const updateTire = async (tireId, payload, options = {}) => {
+export const updateTire = async (
+  tireId,
+  { photo, ...payload },
+  options = {},
+) => {
+  let image = null; //посилання на фото
+  if (photo) {
+    console.log('Зберігаємо фото'); //👀
+    image = await saveFile(photo);
+  }
+
   const rawResult = await TiresCollection.findOneAndUpdate(
     { _id: tireId },
-    payload,
+    {
+      ...payload,
+      ...(image ? { image } : {}),
+    },
     {
       new: true,
       includeResultMetadata: true,
@@ -89,9 +113,27 @@ export const updateTire = async (tireId, payload, options = {}) => {
   );
 
   if (!rawResult || !rawResult.value) return null;
-  console.log('RAW-----------', rawResult.value);
   return {
     tire: rawResult.value,
-    isNew: Boolean(rawResult?.lastErrorObject?.upserted),
+    // ...rawResult.value.toObject(), //????
+    isNew: Boolean(rawResult?.lastErrorObject?.upserted), //???
   };
+};
+
+//DELETE-Tire
+export const deleteTire = async (tireId) => {
+  const tire = await TiresCollection.findOneAndDelete({
+    _id: tireId,
+  });
+
+  //якщо є зображення, то видаляємо і його з хмарного сховища ???? ❌ 🏞️
+  if (tire && tire.imagePublicId) {
+    try {
+      await cloudinary.v2.uploader.destroy(tire.imagePublicId);
+      console.log('Deleted image from Cloudinary:', tire.imagePublicId);
+    } catch (err) {
+      console.error('Failed to delete image from Cloudinary:', err);
+    }
+  }
+  return tire;
 };

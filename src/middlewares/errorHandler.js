@@ -1,4 +1,5 @@
 import { HttpError } from 'http-errors';
+import { MongooseError } from 'mongoose';
 
 export const errorHandler = (err, req, res, next) => {
   // Перевірка, чи отримали ми помилку від createHttpError
@@ -10,6 +11,27 @@ export const errorHandler = (err, req, res, next) => {
     });
     return;
   }
+
+  //   //??? чи потрібно?
+  //   if (err instanceof MongooseError) {
+  //     return res.status(500).json({
+  //       status: 500,
+  //       message: err.message,
+  //       name: 'Mongoose error',
+  //     });
+  //   }
+  //   //?? чи потрібно?
+  //   if (err.isJoi) {
+  //     return res.status(400).json({
+  //       status: 400,
+  //       message: err.message,
+  //       errors: err.details.map((err) => ({
+  //         message: err.message,
+  //         path: err.path,
+  //       })),
+  //       name: 'Validation error',
+  //     });
+  //   }
 
   res.status(500).json({
     message: 'Something went wrong',

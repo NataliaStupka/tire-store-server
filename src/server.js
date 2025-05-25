@@ -6,6 +6,7 @@ import { getEnvVar } from './utils/getEnvVar.js'; // чи є данні змін
 import tiresRouters from './routers/index.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
+import { UPLOADS_DIR_PATH } from './constants/path.js';
 
 const PORT = Number(getEnvVar('PORT', 3000)); //читання/доступ змінних оточення
 
@@ -16,6 +17,8 @@ export const startServer = () => {
 
   // Дозволяє фронтенду робити запити до бекенду
   app.use(cors());
+
+  app.use('/uploads', express.static(UPLOADS_DIR_PATH)); // можливість express роздавати статичні файли
 
   app.use(
     pino({

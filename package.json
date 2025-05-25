@@ -25,12 +25,14 @@
     "pino-pretty": "^13.0.0"
   },
   "dependencies": {
+    "cloudinary": "^2.6.1",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^4.21.1",
     "http-errors": "^2.0.0",
     "joi": "^17.13.3",
     "mongoose": "^8.14.1",
+    "multer": "^2.0.0",
     "pino-http": "^10.4.0"
   }
 }

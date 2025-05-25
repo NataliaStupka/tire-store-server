@@ -13,15 +13,12 @@ import { parseFiltersParams } from '../utils/parseFilterParams.js';
 export const getTiresController = async (req, res, next) => {
   //pagination
   const { page, perPage } = parsePaginationParams(req.query);
-  console.log('req.query - PAGINATION------==', req.query);
 
   //sort
   const { sortBy, sortOrder } = parseSortParams(req.query);
-  console.log('req.query - SORT------==', req.query);
 
   //filter
   const filter = parseFiltersParams(req.query);
-  console.log('req.query - FILTER------==', req.query);
 
   const tires = await getAllTires({
     page,
@@ -33,7 +30,7 @@ export const getTiresController = async (req, res, next) => {
 
   res.json({
     status: 200,
-    message: 'Successfully found tires! ✅',
+    message: 'Successfully found tires!',
     data: tires,
   });
 };
@@ -55,12 +52,73 @@ export const getTireByIdController = async (req, res, next) => {
 
 // POST
 export const createTireController = async (req, res) => {
-  const tire = await createTire(req.body);
+  try {
+    console.log('req.body:', req.body);
+    console.log('req.file:', req.file);
+    const photo = req.file; // {fieldname, originalname, path, ...} // Файл із multer
 
-  res.status(201).json({
+    const tire = await createTire({
+      ...req.body, //name, phoneNumber, isFavourite, contactType
+      photo, //збереження фото
+    });
+
+    res.status(201).json({
+      status: 201,
+      message: 'Successfully created a tire!',
+      data: tire,
+    });
+  } catch (error) {
+    console.error('createTireController error:', error.message);
+    console.error('Validation error details:', error.details);
+  }
+};
+
+//PUT  - upsert (update + insert)//оновлення існуючого/створення нового
+export const upsertTireController = async (req, res, next) => {
+  const { tireId } = req.params;
+  const photo = req.file;
+
+  //const result = await ......   //👀??? photo
+  const result = await updateTire(
+    tireId,
+    { ...req.body, photo },
+    {
+      upsert: true, //дозволяє оновлювати, та створювати ресурс при його відсутності
+    },
+  );
+
+  if (!result) {
+    next(createHttpError(404, 'Tire not found'));
+    return;
+  }
+
+  const status = result.isNew ? 201 : 200;
+
+  res.status(status).json({
+    status,
+    message: 'Successfully upserted a tire!',
+    data: result.tire, //???? data: result.student,
+  });
+};
+
+//PATCH
+export const patchTireController = async (req, res, next) => {
+  const { tireId } = req.params;
+  const photo = req.file; //{fieldname, originalname, path, ...}
+
+  //req.body  чи можна  (req.body,  {photo}) ??? перевірити 👀
+  const result = await updateTire(tireId, { ...req.body, photo }); //👀??? photo
+
+  if (!result) {
+    next(createHttpError(404, 'Tire not found'));
+    return;
+  }
+
+  res.json({
     status: 200,
-    message: 'Successfully created a tire!',
-    data: tire,
+    message: 'Successfully patched a tire!',
+    data: result.tire, //???? 👀
+    // data: result,
   });
 };
 
@@ -76,45 +134,4 @@ export const deleteTireController = async (req, res, next) => {
   }
 
   res.status(204).send();
-};
-
-//PUT  - upsert (update + insert)//оновлення існуючого/створення нового
-export const upsertTireController = async (req, res, next) => {
-  const { tireId } = req.params;
-
-  //const result = await ......
-  const tire = await updateTire(tireId, req.body, {
-    upsert: true, //дозволяє оновлювати, та створювати ресурс при його відсутності
-  });
-
-  if (!tire) {
-    next(createHttpError(404, 'Tire not found'));
-    return;
-  }
-
-  const status = tire.isNew ? 201 : 200;
-
-  res.status(201).json({
-    status,
-    message: 'Successfully upserted a tire!',
-    data: tire.tire, //???? data: result.student,
-  });
-};
-
-//PATCH
-export const patchTireController = async (req, res, next) => {
-  const { tireId } = req.params;
-  console.log('================', tireId);
-  const result = await updateTire(tireId, req.body);
-
-  if (!result) {
-    next(createHttpError(404, 'Tire not found'));
-    return;
-  }
-
-  res.json({
-    status: 200,
-    message: 'Successfully patched a tire!',
-    data: result.tire,
-  });
 };

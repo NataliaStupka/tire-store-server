@@ -12,6 +12,7 @@ import { ctrlWrapper } from '../utils/ctrlWrapper.js';
 import { validateBody } from '../middlewares/validateBody.js';
 import { createTireSchema, updateTireSchema } from '../validation/tire.js';
 import { isValidId } from '../middlewares/isValidId.js';
+import { upload } from '../middlewares/multer.js';
 
 const router = Router();
 router.use('/:tireId', isValidId('tireId')); //відпрацює скрізь де є шлях :tireId
@@ -29,22 +30,20 @@ router.use('/:tireId', isValidId('tireId')); //відпрацює скрізь �
 // };
 
 router.get('/', ctrlWrapper(getTiresController));
-
 router.get('/:tireId', ctrlWrapper(getTireByIdController));
 
 //POST
 router.post(
   '/',
+  upload.single('image'), //завантажування фото
   validateBody(createTireSchema),
   ctrlWrapper(createTireController),
 );
 
-//DELETE
-router.delete('/:tireId', ctrlWrapper(deleteTireController));
-
 //PUT - //оновлення існуючого/створення нового
 router.put(
   '/:tireId',
+  upload.single('image'), //завантажування фото   ??? тут потрібно?
   validateBody(createTireSchema),
   ctrlWrapper(upsertTireController),
 );
@@ -59,8 +58,12 @@ router.put(
 //PATCH
 router.patch(
   '/:tireId',
+  upload.single('image'), //завантажування фото
   validateBody(updateTireSchema),
   ctrlWrapper(patchTireController),
 );
+
+//DELETE
+router.delete('/:tireId', ctrlWrapper(deleteTireController));
 
 export default router;

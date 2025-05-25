@@ -11,3 +11,7 @@ README.my.md
 # ???
 *.log
 /dist
+
+# завантаження зображень
+/temp/**
+/uploads/**

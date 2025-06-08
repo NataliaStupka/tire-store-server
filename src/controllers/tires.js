@@ -117,8 +117,8 @@ export const patchTireController = async (req, res, next) => {
   res.json({
     status: 200,
     message: 'Successfully patched a tire!',
-    data: result.tire, //???? 👀
-    // data: result,
+    // data: result.tire, //???? 👀
+    data: result,
   });
 };
 

@@ -105,9 +105,15 @@ export const upsertTireController = async (req, res, next) => {
 export const patchTireController = async (req, res, next) => {
   const { tireId } = req.params;
   const photo = req.file; //{fieldname, originalname, path, ...}
+  console.log('Received req.body:', req.body); // Логування для дебагу
+  console.log('Received photo:', photo);
 
   //req.body  чи можна  (req.body,  {photo}) ??? перевірити 👀
   const result = await updateTire(tireId, { ...req.body, photo }); //👀??? photo
+  // const result = await updateTire(tireId, {
+  //   ...req.body,
+  //   ...(photo ? { photo } : {}),
+  // });
 
   if (!result) {
     next(createHttpError(404, 'Tire not found'));

@@ -93,17 +93,41 @@ export const updateTire = async (
   { photo, ...payload },
   options = {},
 ) => {
-  let image = null; //посилання на фото
+  let updatedImage = null; //посилання на фото
+  let updatedImagePublicId = null;
+
+  // Якщо передано нове фото
   if (photo) {
-    console.log('Зберігаємо фото'); //👀
-    image = await saveFile(photo);
+    console.log('Зберігаємо фото');
+    //// Отримуємо { url, publicId } з Cloudinary
+    const result = await saveFile(photo); // { url, publicId }
+
+    updatedImage = result.url;
+    updatedImagePublicId = result.publicId;
+
+    // Знаходимо поточну шину для видалення старого зображення
+    const currentTire = await TiresCollection.findById(tireId);
+    if (currentTire && currentTire.imagePublicId) {
+      try {
+        await cloudinary.v2.uploader.destroy(currentTire.imagePublicId);
+        console.log(
+          'Deleted old image from Cloudinary:',
+          currentTire.imagePublicId,
+        );
+      } catch (err) {
+        console.error('Failed to delete old image from Cloudinary:', err);
+      }
+    }
   }
 
   const rawResult = await TiresCollection.findOneAndUpdate(
     { _id: tireId },
     {
       ...payload,
-      ...(image ? { image } : {}),
+      ...(updatedImage
+        ? { image: updatedImage, imagePublicId: updatedImagePublicId }
+        : {}),
+      updatedAt: Date.now(), // Оновлюємо timestamp
     },
     {
       new: true,

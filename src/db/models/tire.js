@@ -16,8 +16,8 @@ const tireSchema = new Schema(
     layering: { type: String, required: false },
     loadIndex: { type: String, required: false },
     tireType: { type: String, required: false, enum: ['tl', 'tt', ''] }, //прибрати з enum '' - лдя диску, бо  внього немає такого типу
-    image: { type: String, default: null, required: false },
-    imagePublicId: { type: String, default: null, required: false }, //для видалення зображення ???? ❌ 🏞️
+    image: { type: String, default: null, required: false }, //шлях де зберігається
+    imagePublicId: { type: String, default: null, required: false }, //індифікатор в Cloudinary, для видалення зображення ❌ 🏞️
     // stock: { type: Number, default: 0 }, //кількість що залишилась?
     // diskDiameter: { type: Number, required: false },
     diskModel: { type: String, required: false },

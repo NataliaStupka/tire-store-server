@@ -23,6 +23,12 @@ const parseNumber = (number) => {
   return parsedNumber;
 };
 
+const parseSize = (size) => {
+  const isString = typeof size === 'string';
+  if (!isString || size.trim() === '') return; // Повертаємо undefined, якщо порожній
+  return size.trim(); // Повертаємо очищений рядок??? дозволяє шукати як точні, так і часткові співпадіння
+};
+
 const parseTireType = (type) => {
   //   const isString = typeof type === 'string';
   //   if (!isString) return;
@@ -44,7 +50,7 @@ export const parseFiltersParams = (filter) => {
     price, //?? чи потрібно
     minPrice,
     maxPrice,
-    // size,
+    size,
     // producer,
     // modelTire,
     // layering,
@@ -60,6 +66,7 @@ export const parseFiltersParams = (filter) => {
     price: parseNumber(price), //?? чи потрібно
     minPrice: parseNumber(minPrice),
     maxPrice: parseNumber(maxPrice),
+    size: parseSize(size),
     tireType: parseTireType(tireType),
     instock: parseBoolean(instock),
   };

@@ -38,6 +38,9 @@ export const getAllTires = async ({
   if (filter.instock || filter.instock === false) {
     tireQuery.where('instock').equals(filter.instock);
   }
+  if (filter.size) {
+    tireQuery.where('size').regex(new RegExp(filter.size, 'i')); // 'i' - нечутливість до регістру; шукаємо часткові співпадіння
+  }
 
   const tireCount = await TiresCollection.find()
     .merge(tireQuery) //зливає (умови з іншого запиту)
@@ -50,7 +53,7 @@ export const getAllTires = async ({
     // .sort({ [sortBy]: sortOrder === 'desc' ? -1 : 1 })  // 1-'asc', -1 - 'desc'
     .exec(); //exeс - запускає запит і повертає результат
   const paginationData = calculatePaginationData(tireCount, perPage, page);
-
+  console.log('TIRES===============-----', tires);
   return {
     data: tires,
     ...paginationData,

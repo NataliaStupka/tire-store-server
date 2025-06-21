@@ -7,6 +7,7 @@ import tiresRouters from './routers/index.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { UPLOADS_DIR_PATH } from './constants/path.js';
+import cookieParser from 'cookie-parser';
 
 const PORT = Number(getEnvVar('PORT', 3000)); //читання/доступ змінних оточення
 
@@ -16,7 +17,15 @@ export const startServer = () => {
   app.use(express.json());
 
   // Дозволяє фронтенду робити запити до бекенду
-  app.use(cors());
+  app.use(
+    cors({
+      // ?????/
+      // origin: 'https://tire-store-server.onrender.com', // Адаптуй під свій фронтенд
+      credentials: true, // Для кукі
+    }),
+  );
+
+  app.use(cookieParser()); //роботи із куками
 
   app.use('/uploads', express.static(UPLOADS_DIR_PATH)); // можливість express роздавати статичні файли
 

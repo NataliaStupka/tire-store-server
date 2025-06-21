@@ -13,9 +13,15 @@ import { validateBody } from '../middlewares/validateBody.js';
 import { createTireSchema, updateTireSchema } from '../validation/tire.js';
 import { isValidId } from '../middlewares/isValidId.js';
 import { upload } from '../middlewares/multer.js';
+//authenticate
+import { authenticate } from '../middlewares/authenticate.js';
+//authorization
+import { checkRoles } from '../middlewares/checkRoles.js';
+import { ROLES } from '../constants/role.js';
 
 const router = Router();
 router.use('/:tireId', isValidId('tireId')); //відпрацює скрізь де є шлях :tireId
+// router.use(authenticate); //для всіх шляхів з /tires
 
 // // Middleware для вибору схеми валідації для PUT
 // const selectUpsertSchema = async (req, res, next) => {
@@ -29,13 +35,17 @@ router.use('/:tireId', isValidId('tireId')); //відпрацює скрізь �
 //   }
 // };
 
+// GET-запити доступні всім без авторизації
 router.get('/', ctrlWrapper(getTiresController));
 router.get('/:tireId', ctrlWrapper(getTireByIdController));
 
+// Захищені операції для адміна
 //POST
 router.post(
   '/',
   upload.single('image'), //завантажування фото
+  authenticate,
+  checkRoles(ROLES.ADMIN),
   validateBody(createTireSchema),
   ctrlWrapper(createTireController),
 );
@@ -44,6 +54,8 @@ router.post(
 router.put(
   '/:tireId',
   upload.single('image'), //завантажування фото   ??? тут потрібно?
+  authenticate,
+  checkRoles(ROLES.ADMIN),
   validateBody(createTireSchema),
   ctrlWrapper(upsertTireController),
 );
@@ -59,11 +71,18 @@ router.put(
 router.patch(
   '/:tireId',
   upload.single('image'), //завантажування фото
+  authenticate,
+  checkRoles(ROLES.ADMIN),
   validateBody(updateTireSchema),
   ctrlWrapper(patchTireController),
 );
 
 //DELETE
-router.delete('/:tireId', ctrlWrapper(deleteTireController));
+router.delete(
+  '/:tireId',
+  authenticate,
+  checkRoles(ROLES.ADMIN),
+  ctrlWrapper(deleteTireController),
+);
 
 export default router;

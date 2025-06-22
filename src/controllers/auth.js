@@ -1,4 +1,5 @@
 import { REFRESH_TOKEN } from '../constants/time-token.js';
+import { UserCollection } from '../db/models/user.js';
 import {
   loginUser,
   logoutUser,
@@ -34,18 +35,31 @@ export const registerUserController = async (req, res) => {
 
 //LOGIN - обробляє HTTP-запит на вхід користувача, викликає функцію аутентифікації loginUser
 // встановлює куки для збереження токенів та ідентифікатора сесії, відправляє клієнту відповідь (про успішний вхід та токеном доступу).
-export const loginUserController = async (req, res) => {
-  const session = await loginUser(req.body);
+export const loginUserController = async (req, res, next) => {
+  try {
+    const session = await loginUser(req.body);
 
-  setupSessionCookies(res, session); //налаштування cookies
+    setupSessionCookies(res, session); //налаштування cookies
 
-  res.json({
-    status: 200,
-    message: 'Successfully logged in an user!',
-    data: {
-      accessToken: session.accessToken,
-    },
-  });
+    const user = await UserCollection.findById(session.userId).select(
+      'name email role',
+    );
+
+    res.json({
+      status: 200,
+      message: 'Successfully logged in an user!',
+      data: {
+        accessToken: session.accessToken,
+        user: {
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
 };
 
 //LOGOUT

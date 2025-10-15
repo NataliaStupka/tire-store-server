@@ -14,8 +14,6 @@ const PORT = Number(getEnvVar('PORT', 3000)); //читання/доступ зм
 export const startServer = () => {
   const app = express();
 
-  app.use(express.json());
-
   // Дозволяє фронтенду робити запити до бекенду
   //// // -1 --- з будь-якої адреси -
   // app.use(
@@ -28,13 +26,14 @@ export const startServer = () => {
 
   // // 2 ---
   // Дозволяє фронтенду робити запити до бекенду
-  const allowedOrigins = [
-    'http://localhost:5173', //  розробка
-    'https://tire-store.onrender.com', // прод-фронтенд
-  ];
   app.use(
     cors({
       origin: function (origin, callback) {
+        const allowedOrigins = [
+          'http://localhost:5173', //  розробка
+          'https://tire-store.onrender.com', // прод-фронтенд
+          // додати swagger, local swager ?
+        ];
         // якщо запит прийшов із дозволеного сайту або без origin (наприклад, із Postman)
         if (!origin || allowedOrigins.includes(origin)) {
           callback(null, true); //✅ дозволяємо
@@ -45,15 +44,16 @@ export const startServer = () => {
       credentials: true,
     }),
   );
-  //----// ========!!!
+  //----// -----------!!!
   // app.use(
   //   cors({
   //     origin: ['http://localhost:5173', 'https://tire-store.onrender.com'], // дозволені фронтенди
   //     credentials: true, // щоб cookies проходили
   //   }),
   // );
-  // // -2 --- end ==
+  // ==========================
 
+  app.use(express.json());
   app.use(cookieParser()); //роботи із куками
 
   app.use('/uploads', express.static(UPLOADS_DIR_PATH)); // можливість express роздавати статичні файли

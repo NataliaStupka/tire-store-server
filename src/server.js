@@ -31,7 +31,7 @@ export const startServer = () => {
       origin: function (origin, callback) {
         const allowedOrigins = [
           'http://localhost:5173', //  розробка
-          'https://tire-store.onrender.com', // прод-фронтенд
+          'https://tire-store-client.vercel.app', // прод-фронтенд
           // додати swagger, local swager ?
         ];
         // якщо запит прийшов із дозволеного сайту або без origin (наприклад, із Postman)

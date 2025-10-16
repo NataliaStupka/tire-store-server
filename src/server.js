@@ -41,7 +41,7 @@ export const startServer = () => {
           callback(new Error('Not allowed by CORS')); // ❌ блокуємо
         }
       },
-      credentials: true,
+      credentials: true, //щоб браузер надсилав куки (refreshToken і sessionId)
     }),
   );
   //----// -----------!!!

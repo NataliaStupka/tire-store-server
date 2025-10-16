@@ -22,6 +22,11 @@ router.post(
   validateBody(registerUserValidationSchema),
   ctrlWrapper(registerUserController),
 );
+// router.post(
+//   '/register-client',
+//   validateBody(registerUserValidationSchema),
+//   ctrlWrapper(registerClientController),
+// );
 
 router.post(
   '/login',

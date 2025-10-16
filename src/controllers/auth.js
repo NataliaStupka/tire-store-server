@@ -11,17 +11,19 @@ import {
 
 //налаштування cookies
 const setupSessionCookies = (res, session) => {
+  const isProd = process.env.NODE_ENV === 'production';
   res.cookie('refreshToken', session.refreshToken, {
     httpOnly: true, //доступний тільки через HTTP-запити, не видно у JS (захист від XSS).
-    secure: process.env.NODE_ENV === 'production', // HTTPS Тільки в продакшені
-    sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+    secure: isProd, // HTTPS Тільки в продакшені
+    sameSite: isProd ? 'None' : 'Lax',
     expires: new Date(Date.now() + REFRESH_TOKEN), //термін дії 30 днів
   });
   res.cookie('sessionId', session._id, {
     httpOnly: true,
+    // secure: true, //куки працюють лише по HTTPS;
+    secure: isProd,
+    sameSite: isProd ? 'None' : 'Lax', // дозволяє відправляти куки з іншого домену (фронт → бекенд);
     expires: new Date(Date.now() + REFRESH_TOKEN),
-    sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax', // дозволяє відправляти куки з іншого домену (фронт → бекенд);
-    secure: true, //куки працюють лише по HTTPS;
   });
 };
 

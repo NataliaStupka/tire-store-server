@@ -37,10 +37,11 @@ export const createTireSchema = Joi.object({
     'string.base': 'Image must be a string',
   }),
   tireType: Joi.string()
+    .allow('')
     .valid('tl', 'tt', '')
     .when('title', {
       is: 'tire',
-      then: Joi.string().valid('tt', 'tl').required(),
+      then: Joi.string().valid('tt', 'tl'),
       otherwise: Joi.string().valid('').optional(),
     })
     .messages({
@@ -82,7 +83,7 @@ export const updateTireSchema = Joi.object({
   modelTire: Joi.string().messages({
     'string.base': 'Model must be a string',
   }),
-  layering: Joi.string().messages({
+  layering: Joi.string().allow('').messages({
     'string.base': 'Layering must be a string',
   }),
   loadIndex: Joi.string().allow('').messages({

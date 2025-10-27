@@ -14,49 +14,38 @@ const PORT = Number(getEnvVar('PORT', 3000)); //читання/доступ зм
 export const startServer = () => {
   const app = express();
 
-  // Дозволяє фронтенду робити запити до бекенду
-  //// // -1 --- з будь-якої адреси -
   // app.use(
   //   cors({
-  //     // origin: 'https://tire-store-server.onrender.com', // Адаптуй під свій фронтенд
-  //     credentials: true, // Для кукі
+  //     origin: ['http://localhost:5173', 'https://tire-store-client.vercel.app'], // дозволені фронтенди
+  //     credentials: true, // щоб cookies проходили
   //   }),
   // );
-  //// // -1 -- end ==
 
-  // // 2 ---
   // Дозволяє фронтенду робити запити до бекенду
+  const allowedOrigins = [
+    'http://localhost:5173', //  розробка
+    'https://tire-store-client.vercel.app', // прод-фронтенд
+    // додати swagger, local swager ?
+  ];
+  // 1️⃣ CORS — має бути перед усім, бо він вирішує, чи можна взагалі продовжувати запит
   app.use(
     cors({
       origin: function (origin, callback) {
-        const allowedOrigins = [
-          'http://localhost:5173', //  розробка
-          'https://tire-store-client.vercel.app', // прод-фронтенд
-          // додати swagger, local swager ?
-        ];
         // якщо запит прийшов із дозволеного сайту або без origin (наприклад, із Postman)
         if (!origin || allowedOrigins.includes(origin)) {
           callback(null, true); //✅ дозволяємо
         } else {
-          callback(new Error('Not allowed by CORS')); // ❌ блокуємо
+          callback(new Error(`Not allowed by CORS: ${origin}`)); // ❌ блокуємо
         }
       },
       credentials: true, //щоб браузер надсилав куки (refreshToken і sessionId)
     }),
   );
-  //----// -----------!!!
-  // app.use(
-  //   cors({
-  //     origin: ['http://localhost:5173', 'https://tire-store.onrender.com'], // дозволені фронтенди
-  //     credentials: true, // щоб cookies проходили
-  //   }),
-  // );
-  // ==========================
 
-  app.use(express.json());
-  app.use(cookieParser()); //роботи із куками
+  app.use(express.json()); // 2️⃣ JSON парсер — щоб Express міг читати тіла запитів
+  app.use(cookieParser()); // 3️⃣ робота із куками
 
-  app.use('/uploads', express.static(UPLOADS_DIR_PATH)); // можливість express роздавати статичні файли
+  app.use('/uploads', express.static(UPLOADS_DIR_PATH)); // 4️⃣ можливість express роздавати статичні файли
 
   app.use(
     pino({
@@ -66,7 +55,7 @@ export const startServer = () => {
     }),
   );
 
-  // ???
+  // 5️⃣ маршрути
   app.get('/', (req, res) => {
     res.json({
       message: 'Hello World, this is Tire Store',
@@ -83,55 +72,3 @@ export const startServer = () => {
     console.log(`Server is running on port ${PORT}`);
   });
 };
-
-// ⁉️ ⁉️ ⁉️ ⁉️ -----------------------
-// Такий порядок гарантує:
-
-// CORS перевіряє запит першим;
-
-// потім express.json() обробляє тіло;
-
-// далі cookieParser() розбирає кукі;
-
-// і лише тоді запит потрапляє до твоїх роутів.
-//
-// // поставити в такому порядку ???
-// import express from 'express';
-// import cors from 'cors';
-// import cookieParser from 'cookie-parser';
-// import dotenv from 'dotenv';
-
-// dotenv.config();
-// const app = express();
-
-// const allowedOrigins = [
-//   'http://localhost:5173',
-//   'https://tire-store.onrender.com',
-// ];
-
-// // 1️⃣ CORS — має бути перед усім, бо він вирішує, чи можна взагалі продовжувати запит
-// app.use(
-//   cors({
-//     origin: function (origin, callback) {
-//       if (!origin || allowedOrigins.includes(origin)) {
-//         callback(null, true);
-//       } else {
-//         callback(new Error('Not allowed by CORS'));
-//       }
-//     },
-//     credentials: true,
-//   }),
-// );
-
-// // 2️⃣ JSON парсер — щоб Express міг читати тіла запитів
-// app.use(express.json());
-
-// // 3️⃣ Парсер кукі — для роботи з cookies (якщо ти зберігаєш сесію або токени в кукі)
-// app.use(cookieParser());
-
-// // 4️⃣ (опціонально) Статичні файли або логери
-// // app.use(express.static('public'));
-
-// // 5️⃣ Твої маршрути
-// app.use('/api/users', userRouter);
-// app.use('/api/tires', tiresRouter);

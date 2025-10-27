@@ -3,7 +3,7 @@ import { UserCollection } from './user.js';
 
 const sessionSchema = new Schema(
   {
-    userId: { type: Schema.ObjectId, ref: UserCollection, unique: true }, //посилання на користувача
+    userId: { type: Schema.ObjectId, ref: UserCollection }, //, unique: true ? посилання на користувача
     accessToken: { type: String, required: true }, //токен
     refreshToken: { type: String, required: true }, //токен
     accessTokenValidUntil: { type: Date, required: true }, //час дії (15 minutes)

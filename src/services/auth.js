@@ -87,8 +87,15 @@ export const refreshSession = async ({ sessionId, refreshToken }) => {
     throw createHttpError(401, 'Session user is not found!');
   }
 
-  //delete old session
-  await SessionCollection.findByIdAndDelete(session._id);
+  // //delete old session
+  // await SessionCollection.findByIdAndDelete(session._id);
+  // або 🧹 Спочатку видаляємо ВСІ старі сесії цього користувача
+  await SessionCollection.deleteMany({ userId: user._id });
+
+  //чистимо сесії в бекенді кожен день
+  await SessionCollection.deleteMany({
+    refreshTokenValidUntil: { $lt: new Date() },
+  });
 
   //create new session
   const newSession = await SessionCollection.create({

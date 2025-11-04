@@ -66,6 +66,20 @@ export const getTireById = async (tireId) => {
   return tire;
 };
 
+//GET diameters rims
+export const getUniqueRimsDiameters = async () => {
+  //distinct - повертає унікальні значення певного поля з колекції.
+  //дістане усі унікальні значення поля size, в category = 'rims',
+  const sizes = await TiresCollection.distinct('size', { category: 'rims' });
+  console.log('⚡️ sizes: ', sizes);
+
+  return sizes
+    .filter(Boolean) //прибере false, null, undefined, '', 0, залишить "цифри"
+    .map((size) => parseFloat(String(size).replace(',', '.'))) //перетворили в число
+    .filter((number) => !isNaN(number))
+    .sort((a, b) => a - b);
+};
+
 //CREATE-Tire  //payload - {об’єкт} даних tire (весь запит)
 export const createTire = async (payload) => {
   let image = null; //посилання на фото

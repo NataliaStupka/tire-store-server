@@ -4,6 +4,7 @@ import {
   deleteTireController,
   getTireByIdController,
   getTiresController,
+  getUniqueRimsDiametersController,
   patchTireController,
   upsertTireController,
 } from '../controllers/tires.js';
@@ -20,6 +21,9 @@ import { checkRoles } from '../middlewares/checkRoles.js';
 import { ROLES } from '../constants/role.js';
 
 const router = Router();
+
+router.get('/rims/sizes', ctrlWrapper(getUniqueRimsDiametersController));
+
 router.use('/:tireId', isValidId('tireId')); //відпрацює скрізь де є шлях :tireId
 // router.use(authenticate); //для всіх шляхів з /tires
 

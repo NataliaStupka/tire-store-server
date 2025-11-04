@@ -3,6 +3,7 @@ import {
   deleteTire,
   getAllTires,
   getTireById,
+  getUniqueRimsDiameters,
   updateTire,
 } from '../services/tires.js';
 import createHttpError from 'http-errors'; //зручне створення помилок
@@ -48,6 +49,16 @@ export const getTireByIdController = async (req, res, next) => {
     message: `Successfully found tire with id ${tireId}`,
     data: tire,
   });
+};
+
+export const getUniqueRimsDiametersController = async (req, res, next) => {
+  try {
+    // getUniqueRimsDiameters
+    const sizes = await getUniqueRimsDiameters();
+    res.json({ data: sizes });
+  } catch (error) {
+    next(error);
+  }
 };
 
 // POST

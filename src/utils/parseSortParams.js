@@ -3,9 +3,16 @@ export const parseSortParams = (query) => {
     ? query.sortOrder
     : 'asc';
 
-  const sortBy = ['title', 'price', 'instock'].includes(query.sortBy)
+  const sortBy = [
+    'title',
+    'price',
+    'instock',
+    'createdAt',
+    '_id',
+    'category',
+  ].includes(query.sortBy)
     ? query.sortBy
-    : 'id';
+    : '_id';
 
   return { sortOrder, sortBy };
 };

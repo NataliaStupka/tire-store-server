@@ -42,15 +42,17 @@ export const getAllTires = async ({
     tireQuery.where('size').regex(new RegExp(filter.size, 'i')); // 'i' - нечутливість до регістру; шукаємо часткові співпадіння
   }
 
-  const tireCount = await TiresCollection.find()
-    .merge(tireQuery) //зливає (умови з іншого запиту)
-    .countDocuments(); //підраховує кількість tire, що задовольняють умови запиту.
+  tireQuery.sort(sortBy ? { [sortBy]: sortOrder } : { _id: 1 });
+  const tireCount = await tireQuery.clone().countDocuments();
+
+  // const tireCount = await TiresCollection.find()
+  //   .merge(tireQuery) //зливає (умови з іншого запиту)
+  //   .countDocuments(); //підраховує кількість tire, що задовольняють умови запиту.
 
   const tires = await tireQuery
     .skip(skip)
     .limit(limit)
-    .sort({ [sortBy]: sortOrder })
-    // .sort({ [sortBy]: sortOrder === 'desc' ? -1 : 1 })  // 1-'asc', -1 - 'desc'
+    .sort({ [sortBy]: sortOrder === 'desc' ? -1 : 1 }) // 1-'asc', -1 - 'desc'
     .exec(); //exeс - запускає запит і повертає результат
   const paginationData = calculatePaginationData(tireCount, perPage, page);
   console.log('TIRES===============-----', tires);

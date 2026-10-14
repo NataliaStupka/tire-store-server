@@ -3,7 +3,7 @@ const parceCategory = (category) => {
   if (!isString) return;
 
   const isCategory = (category) =>
-    ['loader', 'industrial', 'agricultural', 'rims'].includes(category);
+    ['loader', 'industrial', 'agricultural', 'car', 'rims'].includes(category);
 
   if (isCategory(category)) return category;
 };

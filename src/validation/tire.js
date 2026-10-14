@@ -4,12 +4,12 @@ import Joi from 'joi';
 // .allow('') Дозволяє порожні значення,
 export const createTireSchema = Joi.object({
   category: Joi.string()
-    .valid('loader', 'industrial', 'agricultural', 'rims')
+    .valid('loader', 'industrial', 'agricultural', 'car', 'rims')
     .required()
     .messages({
       'any.required': 'Category is required',
       'any.only':
-        'Category must be one of: loader, industrial, agricultural, rims',
+        'Category must be one of: loader, industrial, agricultural, car, rims',
     }),
   title: Joi.string().valid('tire', 'rims').required().messages({
     'any.required': 'Title is required',
@@ -61,10 +61,10 @@ export const createTireSchema = Joi.object({
 //при оновленні шини:
 export const updateTireSchema = Joi.object({
   category: Joi.string()
-    .valid('loader', 'industrial', 'agricultural', 'rims')
+    .valid('loader', 'industrial', 'agricultural', 'car', 'rims')
     .messages({
       'any.only':
-        'Category must be one of: loader, industrial, agricultural, rims',
+        'Category must be one of: loader, industrial, agricultural, car rims',
     }),
   title: Joi.string().min(3).max(30).messages({
     'string.min': 'Title must be at least 3 characters long',

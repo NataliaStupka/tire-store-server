@@ -58,6 +58,7 @@ export const parseFiltersParams = (filter) => {
     tireType,
     // diskModel,
     instock,
+    isProductOfDay,
   } = filter;
 
   return {
@@ -69,5 +70,6 @@ export const parseFiltersParams = (filter) => {
     size: parseSize(size),
     tireType: parseTireType(tireType),
     instock: parseBoolean(instock),
+    isProductOfDay: parseBoolean(isProductOfDay),
   };
 };

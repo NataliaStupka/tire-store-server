@@ -41,6 +41,10 @@ export const getAllTires = async ({
   if (filter.size) {
     tireQuery.where('size').regex(new RegExp(filter.size, 'i')); // 'i' - нечутливість до регістру; шукаємо часткові співпадіння
   }
+  // ПОЯСНИ!!! для чого це? 👀 👀 👀 👀 👀 equals - ?
+  if (filter.isProductOfDay || filter.isProductOfDay === false) {
+    tireQuery.where('isProductOfDay').equals(filter.isProductOfDay);
+  }
 
   tireQuery.sort(sortBy ? { [sortBy]: sortOrder } : { _id: 1 });
   const tireCount = await tireQuery.clone().countDocuments();

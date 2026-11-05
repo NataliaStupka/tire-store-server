@@ -56,6 +56,7 @@ export const createTireSchema = Joi.object({
   }),
   //   instock: Joi.boolean(), //є в наявності
   instock: Joi.string().valid('true', 'false').required(),
+  isProductOfDay: Joi.boolean(),
 }).unknown(true); // Дозволяємо додаткові поля (наприклад, image);
 
 //при оновленні шини:
@@ -103,4 +104,5 @@ export const updateTireSchema = Joi.object({
   }),
   //   stock: Joi.number(),
   instock: Joi.boolean(),
+   isProductOfDay: Joi.boolean(),
 });

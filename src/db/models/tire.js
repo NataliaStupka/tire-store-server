@@ -22,6 +22,7 @@ const tireSchema = new Schema(
     // diskDiameter: { type: Number, required: false },
     diskModel: { type: String, required: false },
     instock: { type: Boolean, required: false }, //в наявності?
+    isProductOfDay: { type: Boolean, default: false },
   },
   {
     timestamps: true, //час створення та оновлення документа.
